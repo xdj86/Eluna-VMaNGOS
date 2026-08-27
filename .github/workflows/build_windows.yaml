@@ -1,0 +1,67 @@
+name: Build Windows Only (Visual Studio)
+
+on:
+  workflow_dispatch:   # 支持手动触发
+  push:
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - '.github/workflows/development-db-dump.yaml'
+      - '.github/workflows/pr-sql-check.yaml'
+      - '.gitignore'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'README.md'
+      - 'sql/**'
+  pull_request:
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - '.github/workflows/development-db-dump.yaml'
+      - '.github/workflows/pr-sql-check.yaml'
+      - '.gitignore'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'README.md'
+      - 'sql/**'
+
+jobs:
+  build:
+    name: Windows VS2022 - Client ${{ matrix.client_build }}
+    runs-on: windows-2022
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        client_build: [5875]   # 这里只保留了最新版本，想加其他版本加逗号分隔即可
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Build and install on Windows (Visual Studio)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 编译依赖库
+          cd "$GITHUB_WORKSPACE/dep/windows/optional_dependencies"
+          ./curl_download_and_build.bat
+
+          # 编译主程序
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p build
+          cd build
+          cmake ../ \
+            -DBUILD_EXTRACTORS=1 \
+            -DENABLE_MAILSENDER=1 \
+            -DBUILD_WARNINGS_AS_ERROR=0 \
+            -DSUPPORTED_CLIENT_BUILD="${{ matrix.client_build }}" \
+            -G "Visual Studio 17 2022" \
+            -A x64
+
+          # MSBuild 编译（自动适配 VS 路径，防止 Enterprise 找不到）
+          "$(vswhere -latest -property installationPath)/MSBuild/Current/Bin/MSBuild.exe" "MaNGOS.sln" //p:Platform=x64 //p:Configuration=Release //m
