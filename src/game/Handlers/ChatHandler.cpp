@@ -476,7 +476,7 @@ void WorldSession::HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage const
                 {
 #ifdef ENABLE_ELUNA
                     if (Eluna* e = sWorld.GetEluna())
-                        e->OnChat(masterPlr->GetSession()->GetPlayer(), packet.type, packet.lang, const_cast<std::string&>(packet.message), toPlayer);
+                        if (!e->OnChat(GetPlayer(), packet.type, packet.lang, const_cast<std::string&>(packet.message), toPlayer))
                             return;
 #endif
                     masterPlr->Whisper(packet.message.c_str(), packet.lang, player);
