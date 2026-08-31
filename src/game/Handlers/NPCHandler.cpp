@@ -384,6 +384,10 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelec
 
     // Only forward a non-null code to scripts for coded gossip options.
     const char* code = (isCoded && !packet.code.empty()) ? packet.code.c_str() : nullptr;
+#ifdef ENABLE_ELUNA
+    // Eluna gossip handlers take the code as std::string; never bind a null const char* to it.
+    std::string const elunaCode = code ? code : std::string();
+#endif
 
     if (packet.guid.IsAnyTypeCreature())
     {
@@ -425,7 +429,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelec
         }
 
         if (Eluna* e = GetPlayer()->GetEluna())
-            e->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GossipOptionSender(packet.gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(packet.gossipListId), code);
+            e->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GossipOptionSender(packet.gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(packet.gossipListId), elunaCode);
     }
     else if (packet.guid.IsPlayer())
     {
@@ -436,7 +440,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelec
         }
 
         if (Eluna* e = GetPlayer()->GetEluna())
-            e->HandleGossipSelectOption(GetPlayer(), GetPlayer()->PlayerTalkClass->GetGossipMenu().GetMenuId(), GetPlayer()->PlayerTalkClass->GossipOptionSender(packet.gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(packet.gossipListId), code);
+            e->HandleGossipSelectOption(GetPlayer(), GetPlayer()->PlayerTalkClass->GetGossipMenu().GetMenuId(), GetPlayer()->PlayerTalkClass->GossipOptionSender(packet.gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(packet.gossipListId), elunaCode);
     }
 #endif
 
