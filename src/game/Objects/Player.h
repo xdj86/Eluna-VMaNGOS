@@ -1235,6 +1235,10 @@ class Player final: public Unit
         void _LoadSpells(std::unique_ptr<QueryResult> result);
         bool _LoadHomeBind(std::unique_ptr<QueryResult> result);
         void _LoadBGData(std::unique_ptr<QueryResult> result);
+
+        // dual spec
+        void _LoadAlternativeSpec();
+
         void _LoadIntoDataField(char const* data, uint32 startOffset, uint32 count);
         void _LoadGuild(std::unique_ptr<QueryResult> result);
         uint32 m_characterFlags;
@@ -1264,7 +1268,12 @@ class Player final: public Unit
         void _SaveSkills();
         void _SaveSpells();
         void _SaveBGData();
+
+        // dual spec
+        void _SaveAlternativeSpec();
+
         void _SaveStats();
+
         uint32 m_nextSave;
         bool m_saveDisabled; // used for temporary bots and faction change
     public:
@@ -1305,6 +1314,12 @@ class Player final: public Unit
         uint32 m_stableSlots;
         uint32 m_petEntry;
         uint32 m_petSpell;
+
+        // Second spec info
+        typedef std::list<uint32> SpellIDList;
+        SpellIDList m_altspec_talents;
+        // ActionButtonList m_altspec_actionButtons;
+        time_t m_altspec_lastswap;
 
         void RemovePet(PetSaveMode mode);
         void RemoveMiniPet();
@@ -1819,6 +1834,9 @@ class Player final: public Unit
 
         uint32 GetHomeBindMap() const { return m_homebind.mapId; }
         uint16 GetHomeBindAreaId() const { return m_homebindAreaId; }
+
+        	// dual spec
+        uint32 SwapSpec();
 
         void SendSummonRequest(ObjectGuid summonerGuid, uint32 mapId, uint32 zoneId, float x, float y, float z);
         void SetSummonPoint(uint32 mapid, float x, float y, float z)

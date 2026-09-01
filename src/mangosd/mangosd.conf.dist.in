@@ -1464,6 +1464,9 @@ GuidReserveSize.GameObject = 1000
 #        See enum CheatAction for all flags
 #        Default: 8 - Kick
 #
+
+# DualSpec TimeDelta 
+# 	time duration to switch dual talent, dual spec command .swapspec
 ###################################################################################################################
 
 ChatFakeMessagePreventing = 1
@@ -1488,7 +1491,7 @@ WhisperRestriction = 0
 SayMinLevel = 0;
 SayEmoteMinLevel = 0;
 Antiflood.Sanction = 8
-
+DualSpecTimeDelta = 300
 ###################################################################################################
 # WARDEN SETTINGS
 #

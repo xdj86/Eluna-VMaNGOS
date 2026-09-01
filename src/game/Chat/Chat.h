@@ -1043,6 +1043,10 @@ class ChatHandler
         bool HandleSaveAllCommand(char* args);
         bool HandleDebugMoveCommand(char* args);
 
+        // dual spec
+        bool HandleSwapSpec(char* args);
+
+
         Player*   GetSelectedPlayer() const;
         Creature* GetSelectedCreature() const;
         Unit*     GetSelectedUnit() const;
